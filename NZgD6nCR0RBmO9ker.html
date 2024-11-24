@@ -1,0 +1,718 @@
+<html><head><base href="/" /><title>Gestion du Personnel - Région du Bounkani</title>
+<style>
+:root {
+  --orange: #ff7f00; 
+  --green: #009f4d;
+  --white: #ffffff;
+  --gray: #f5f5f5;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--white);
+}
+
+.container {
+  padding: 2rem;
+}
+
+nav {
+  background: var(--orange);
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-button {
+  background: var(--white);
+  color: var(--orange);
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background: var(--gray);
+}
+
+.nav-button.active {
+  background: var(--green);
+  color: var(--white);
+}
+
+h1 {
+  color: white;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab {
+  padding: 0.8rem 1.5rem;
+  background: var(--gray);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.tab.active {
+  background: var(--green);
+  color: white;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.form-group input:invalid {
+  border-color: #ff4444;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 5px rgba(255,127,0,0.3);
+}
+
+h2 {
+  color: var(--orange);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  margin: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-submit {
+  background: var(--green);
+  color: white;
+}
+
+.welcome-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.admin-controls {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--gray);
+  border-radius: 5px;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.data-table th {
+  background: var(--orange);
+  color: white;
+}
+
+.data-table tr:nth-child(even) {
+  background: var(--gray);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  background: var(--orange);
+  color: white;
+}
+
+.btn-delete {
+  background: #ff4444;
+  color: white;
+}
+
+@media print {
+  .admin-controls, .tabs {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-container">
+    <div class="nav-buttons">
+      <button onclick="switchToUserMode()" class="nav-button" id="userModeBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;">
+          <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        Mode Utilisateur
+      </button>
+      <button onclick="switchToAdminMode()" class="nav-button" id="adminModeBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;">
+          <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+        </svg>
+        Mode Admin
+      </button>
+    </div>
+    <h1 class="welcome-header">Gestion du Personnel - Région du Bounkani</h1>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="tabs" id="mainTabs">
+    <button class="tab active" onclick="showTab('corpsPrefectoral', event)">Corps Préfectoral</button>
+    <button class="tab" onclick="showTab('directeurs', event)">Directeurs Régionaux</button>
+    <button class="tab" onclick="showTab('administrations', event)">Administrations Déconcentrées</button>  
+    <button class="tab" onclick="showTab('elusLocaux', event)">Élus Locaux</button>
+    <button class="tab" onclick="showTab('chefsReligieux', event)">Chefs Religieux</button>
+    <button class="tab" onclick="showTab('associations', event)">Responsables d'Associations</button>
+    <button class="tab" onclick="showTab('ong', event)">Organismes et ONG</button>
+    <button class="tab" onclick="showTab('dashboard', event)">Tableau de Bord</button>
+  </div>
+
+  <div id="formContainer" class="form-container"></div>
+</div>
+
+<script>
+const defaultAdminPassword = 'PrefectureBouna';
+let isAdmin = false;
+
+const formTemplates = {
+  corpsPrefectoral: `
+    <h2>Ajouter - Corps Préfectoral</h2>
+    <form onsubmit="submitForm(event, 'corpsPrefectoral')">
+      <div class="form-group">
+        <label>Nom et Prénoms</label>
+        <input type="text" name="nomPrenoms" required pattern="[A-Za-zÀ-ÿ\\s]+" title="Lettres et espaces uniquement">
+      </div>
+      <div class="form-group">
+        <label>Fonction</label>
+        <input type="text" name="fonction" required>
+      </div>
+      <div class="form-group">
+        <label>Grade</label>
+        <input type="text" name="grade" required>
+      </div>
+      <div class="form-group">
+        <label>Date de prise de service</label>
+        <input type="date" name="datePriseService" required max="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="form-group">
+        <label>Matricule</label>
+        <input type="text" name="matricule" required pattern="[A-Z0-9]+" title="Lettres majuscules et chiffres uniquement">
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required pattern="[0-9+\\s]+" title="Numéro de téléphone valide">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  directeurs: `
+    <h2>Ajouter - Directeurs Régionaux et Chefs de Services</h2>
+    <form onsubmit="submitForm(event, 'directeurs')">
+      <div class="form-group">
+        <label>Nom et Prénoms</label>
+        <input type="text" name="nomPrenoms" required pattern="[A-Za-zÀ-ÿ\\s]+" title="Lettres et espaces uniquement">
+      </div>
+      <div class="form-group">
+        <label>Matricule</label>
+        <input type="text" name="matricule" required pattern="[A-Z0-9]+" title="Lettres majuscules et chiffres uniquement">
+      </div>
+      <div class="form-group">
+        <label>Fonction</label>
+        <input type="text" name="fonction" required>
+      </div>
+      <div class="form-group">
+        <label>Grade</label>
+        <input type="text" name="grade" required>
+      </div>
+      <div class="form-group">
+        <label>Emploi</label>
+        <input type="text" name="emploi" required>
+      </div>
+      <div class="form-group">
+        <label>Date de prise de service</label>
+        <input type="date" name="datePriseService" required max="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required pattern="[0-9+\\s]+" title="Numéro de téléphone valide">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  administrations: `
+    <h2>Ajouter - Administrations Déconcentrées</h2>
+    <form onsubmit="submitForm(event, 'administrations')">
+      <div class="form-group">
+        <label>Nom de l'Administration</label>
+        <input type="text" name="nomAdministration" required>
+      </div>
+      <div class="form-group">
+        <label>Type d'Administration</label>
+        <input type="text" name="typeAdministration" required>
+      </div>
+      <div class="form-group">
+        <label>Localisation</label>
+        <input type="text" name="localisation" required>
+      </div>
+      <div class="form-group">
+        <label>Contact Principal</label>
+        <input type="tel" name="contactPrincipal" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  elusLocaux: `
+    <h2>Ajouter - Élus Locaux</h2>
+    <form onsubmit="submitForm(event, 'elusLocaux')">
+      <div class="form-group">
+        <label>Nom et Prénoms</label>
+        <input type="text" name="nomPrenoms" required>
+      </div>
+      <div class="form-group">
+        <label>Fonction</label>
+        <input type="text" name="fonction" required>
+      </div>
+      <div class="form-group">
+        <label>Circonscription</label>
+        <input type="text" name="circonscription" required>
+      </div>
+      <div class="form-group">
+        <label>Date de prise de fonction</label>
+        <input type="date" name="datePriseFonction" required>
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  chefsReligieux: `
+    <h2>Ajouter - Chefs Religieux</h2>
+    <form onsubmit="submitForm(event, 'chefsReligieux')">
+      <div class="form-group">
+        <label>Nom et Prénoms</label>
+        <input type="text" name="nomPrenoms" required>
+      </div>
+      <div class="form-group">
+        <label>Religion</label>
+        <input type="text" name="religion" required>
+      </div>
+      <div class="form-group">
+        <label>Fonction Religieuse</label>
+        <input type="text" name="fonctionReligieuse" required>
+      </div>
+      <div class="form-group">
+        <label>Lieu de Culte</label>
+        <input type="text" name="lieuCulte" required>
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  associations: `
+    <h2>Ajouter - Responsables d'Associations</h2>
+    <form onsubmit="submitForm(event, 'associations')">
+      <div class="form-group">
+        <label>Nom de l'Association</label>
+        <input type="text" name="nomAssociation" required>
+      </div>
+      <div class="form-group">
+        <label>Type d'Association</label>
+        <input type="text" name="typeAssociation" required>
+      </div>
+      <div class="form-group">
+        <label>Nom du Responsable</label>
+        <input type="text" name="nomResponsable" required>
+      </div>
+      <div class="form-group">
+        <label>Fonction</label>
+        <input type="text" name="fonction" required>
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  ong: `
+    <h2>Ajouter - Organismes et ONG</h2>
+    <form onsubmit="submitForm(event, 'ong')">
+      <div class="form-group">
+        <label>Nom de l'Organisme/ONG</label>
+        <input type="text" name="nomOrganisme" required>
+      </div>
+      <div class="form-group">
+        <label>Type d'Organisation</label>
+        <input type="text" name="typeOrganisation" required>
+      </div>
+      <div class="form-group">
+        <label>Domaine d'Intervention</label>
+        <input type="text" name="domaineIntervention" required>
+      </div>
+      <div class="form-group">
+        <label>Nom du Responsable</label>
+        <input type="text" name="nomResponsable" required>
+      </div>
+      <div class="form-group">
+        <label>Contacts</label>
+        <input type="tel" name="contacts" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Enregistrer</button>
+    </form>
+  `,
+  dashboard: `
+    <h2>Tableau de Bord</h2>
+    <p>En construction...</p>
+  `,
+  adminLogin: `
+    <h2>Connexion Administrateur</h2>
+    <form onsubmit="loginAdmin(event)">
+      <div class="form-group">
+        <label>Mot de passe administrateur</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-submit">Se connecter</button>
+    </form>
+  `
+};
+
+const adminControlsTemplate = `
+  <div class="admin-controls">
+    <button onclick="showDataTable()" class="btn">Afficher les données</button>
+    <button onclick="exportToExcel()" class="btn">Exporter (Excel)</button>
+    <button onclick="printData()" class="btn">Imprimer</button>
+    ${isAdmin ? '<button onclick="logoutAdmin()" class="btn">Déconnexion</button>' : 
+                '<button onclick="showLogin()" class="btn">Connexion Admin</button>'}
+  </div>
+`;
+
+class LocalStorageDB {
+  constructor() {
+    this.initializeStorage();
+  }
+
+  initializeStorage() {
+    if (!localStorage.getItem('database')) {
+      const initialData = {
+        corpsPrefectoral: [],
+        directeurs: [],
+        administrations: [],
+        elusLocaux: [],
+        chefsReligieux: [],
+        associations: [],
+        ong: []
+      };
+      localStorage.setItem('database', JSON.stringify(initialData));
+    }
+  }
+
+  addData(table, data) {
+    const db = JSON.parse(localStorage.getItem('database'));
+    data.id = Date.now(); // Simple unique ID
+    if (!db[table]) db[table] = [];
+    db[table].push(data);
+    localStorage.setItem('database', JSON.stringify(db));
+  }
+}
+
+const db = new LocalStorageDB();
+
+let currentTab = 'corpsPrefectoral';
+
+function showTab(tabName, event) {
+  currentTab = tabName;
+  
+  // Update active tab styling
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  if (event) {
+    event.target.classList.add('active');
+  } else {
+    document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
+  }
+
+  // Check admin status
+  isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+  // Display corresponding form with admin controls if logged in
+  const formContainer = document.getElementById('formContainer');
+  formContainer.innerHTML = (isAdmin ? adminControlsTemplate : '') + 
+                           formTemplates[tabName];
+}
+
+function goHome() {
+  // Reset to default tab
+  showTab('corpsPrefectoral');
+  
+  // Clear any displayed data tables
+  const formContainer = document.getElementById('formContainer');
+  if (formContainer) {
+    formContainer.innerHTML = (isAdmin ? adminControlsTemplate : '') + 
+                             formTemplates['corpsPrefectoral'];
+  }
+  
+  // Reset active tab styling
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelector('.tab[onclick*="corpsPrefectoral"]').classList.add('active');
+}
+
+function switchToUserMode() {
+  // Remove admin privileges
+  isAdmin = false;
+  localStorage.removeItem('isAdmin');
+  
+  // Update button styling
+  document.getElementById('userModeBtn').classList.add('active');
+  document.getElementById('adminModeBtn').classList.remove('active');
+  
+  // Refresh current tab view
+  showTab(currentTab);
+}
+
+function switchToAdminMode() {
+  // Show login form if not already logged in
+  if (!isAdmin) {
+    showLogin();
+    document.getElementById('userModeBtn').classList.remove('active');
+    document.getElementById('adminModeBtn').classList.add('active');
+  }
+}
+
+function loginAdmin(event) {
+  event.preventDefault();
+  const password = event.target.password.value;
+  if (password === defaultAdminPassword) {
+    isAdmin = true;
+    localStorage.setItem('isAdmin', 'true');
+    alert('Connexion réussie!');
+    document.getElementById('userModeBtn').classList.remove('active');
+    document.getElementById('adminModeBtn').classList.add('active');
+    showTab(currentTab);
+  } else {
+    alert('Mot de passe incorrect');
+    document.getElementById('userModeBtn').classList.add('active');
+    document.getElementById('adminModeBtn').classList.remove('active');
+  }
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  localStorage.removeItem('isAdmin');
+  showTab(currentTab);
+}
+
+function showLogin() {
+  const formContainer = document.getElementById('formContainer');
+  formContainer.innerHTML = formTemplates.adminLogin;
+}
+
+function showDataTable() {
+  const data = JSON.parse(localStorage.getItem('database'))[currentTab] || [];
+  if (!data.length) {
+    alert('Aucune donnée disponible');
+    return;
+  }
+
+  let tableHTML = `<table class="data-table"><thead><tr>`;
+  // Generate headers from first data entry
+  Object.keys(data[0]).forEach(key => {
+    if (key !== 'id') {
+      tableHTML += `<th>${key}</th>`;
+    }
+  });
+  tableHTML += `<th>Actions</th></tr></thead><tbody>`;
+
+  // Generate rows
+  data.forEach(entry => {
+    tableHTML += `<tr>`;
+    Object.entries(entry).forEach(([key, value]) => {
+      if (key !== 'id') {
+        tableHTML += `<td>${value}</td>`;
+      }
+    });
+    tableHTML += `
+      <td class="action-buttons">
+        <button onclick="editEntry(${entry.id})" class="btn btn-edit">Modifier</button>
+        <button onclick="deleteEntry(${entry.id})" class="btn btn-delete">Supprimer</button>
+      </td>
+    </tr>`;
+  });
+  tableHTML += `</tbody></table>`;
+
+  const formContainer = document.getElementById('formContainer');
+  formContainer.innerHTML = tableHTML;
+}
+
+function editEntry(id) {
+  const data = JSON.parse(localStorage.getItem('database'))[currentTab];
+  const entry = data.find(item => item.id === id);
+  if (!entry) return;
+
+  // Load form with existing data
+  showTab(currentTab);
+  const form = document.querySelector('form');
+  Object.entries(entry).forEach(([key, value]) => {
+    const input = form.elements[key];
+    if (input) input.value = value;
+  });
+}
+
+function deleteEntry(id) {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) return;
+
+  const db = JSON.parse(localStorage.getItem('database'));
+  db[currentTab] = db[currentTab].filter(item => item.id !== id);
+  localStorage.setItem('database', JSON.stringify(db));
+  showDataTable();
+}
+
+function exportToExcel() {
+  const data = JSON.parse(localStorage.getItem('database'))[currentTab];
+  if (!data.length) {
+    alert('Aucune donnée à exporter');
+    return;
+  }
+
+  // Convert data to CSV
+  const headers = Object.keys(data[0]).filter(key => key !== 'id');
+  let csv = headers.join(',') + '\n';
+  
+  data.forEach(row => {
+    csv += headers.map(header => `"${row[header]}"`).join(',') + '\n';
+  });
+
+  // Create download link
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${currentTab}_export.csv`;
+  link.click();
+}
+
+function printData() {
+  window.print();
+}
+
+// Show default tab on load
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('corpsPrefectoral', null);
+  
+  // Set initial button state
+  if (localStorage.getItem('isAdmin') === 'true') {
+    document.getElementById('adminModeBtn').classList.add('active');
+  } else {
+    document.getElementById('userModeBtn').classList.add('active');
+  }
+});
+</script>
+</body>
+</html>
